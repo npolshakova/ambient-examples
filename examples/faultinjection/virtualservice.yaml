@@ -1,0 +1,23 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: ratings-ew
+  namespace: bookinfo
+spec:
+  hosts:
+  - ratings
+  http:
+  - fault:
+      abort:
+        httpStatus: 418
+        percentage:
+          value: 100
+    match:
+    - uri:
+        prefix: /
+    name: ratings-rt
+    route:
+    - destination:
+        host: ratings.bookinfo.svc.cluster.local
+        port:
+          number: 9080

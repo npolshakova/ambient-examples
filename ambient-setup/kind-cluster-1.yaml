@@ -1,0 +1,54 @@
+  kind: Cluster
+  apiVersion: kind.x-k8s.io/v1alpha4
+  kubeadmConfigPatches:
+  - |
+    kind: InitConfiguration
+    nodeRegistration:
+      kubeletExtraArgs:
+        authorization-mode: "AlwaysAllow"
+        feature-gates: "EphemeralContainers=true"
+        # Populate nodes with region/zone info, which are used by VirtualDestination locality-based failover
+        node-labels: "ingress-ready=true,topology.kubernetes.io/region=us-west,topology.kubernetes.io/zone=us-west-1b"
+  - |
+    kind: KubeletConfiguration
+    featureGates:
+      EphemeralContainers: true
+  - |
+    kind: KubeProxyConfiguration
+    featureGates:
+      EphemeralContainers: true
+  - |
+    kind: ClusterConfiguration
+    metadata:
+      name: config
+    apiServer:
+      extraArgs:
+        "feature-gates": "EphemeralContainers=true"
+    scheduler:
+      extraArgs:
+        "feature-gates": "EphemeralContainers=true"
+    controllerManager:
+      extraArgs:
+        "feature-gates": "EphemeralContainers=true"
+  networking:
+    disableDefaultCNI: false
+  nodes:
+  - role: control-plane
+    extraPortMappings:
+    - containerPort: 32080
+      hostPort: 32080
+      protocol: TCP
+    - containerPort: 32443
+      hostPort: 32443
+      protocol: TCP
+    - containerPort: 32081
+      hostPort: 32081
+      protocol: TCP
+    - containerPort: 32444
+      hostPort: 32444
+      protocol: TCP
+    - containerPort: 32446
+      hostPort: 32446
+      protocol: TCP
+  - role: worker
+  - role: worker

@@ -1,0 +1,17 @@
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+ name: ratings-access
+ namespace: bookinfo
+spec:
+ selector:
+   matchLabels:
+     istio.io/gateway-name: ratings
+ action: ALLOW
+ rules:
+  - from:
+    - source:
+        principals: ["cluster.local/ns/bookinfo/sa/bookinfo-productpage"]
+    when:
+    - key: request.headers[X-Test]
+      values: ["istio-is-cool"]
