@@ -141,14 +141,14 @@ kubectl exec -it deploy/productpage-v1 -n bookinfo --context ${AMBIENT_CONTEXT} 
 kubectl exec -it deploy/reviews-v1 -n bookinfo --context ${AMBIENT_CONTEXT} -c curl -- curl ratings:9080/ratings/1
 ```
 
-Now apply a L7 policy:
+Now apply a L7 policy. First apply the exact same policy as the sidecar:
 
 ```
-cat ../examples/authorizationpolicy/l7policyambient.yaml
-kubectl apply --namespace=bookinfo --context=${AMBIENT_CONTEXT} -f ../examples/authorizationpolicy/l7policyambient.yaml
+cat ../examples/authorizationpolicy/l7policysidecar.yaml
+kubectl apply --namespace=bookinfo --context=${AMBIENT_CONTEXT} -f ../examples/authorizationpolicy/l7policysidecar.yaml
 ```
 
-What happens if we apply an L7 policy before we get a Gateway? 
+What happens if we apply an L7 policy before we have a Gateway using the pod labels? 
 
 ```
 kubectl exec -it deploy/productpage-v1 -n bookinfo --context=${AMBIENT_CONTEXT} -c curl -- curl ratings:9080/ratings/1 -H 'X-Test: istio-is-cool'
@@ -160,6 +160,13 @@ Apply the Gateway resource to create a waypoint for the service account:
 ```
 cat ../examples/authorizationpolicy/gateway.yaml
 kubectl apply --namespace=bookinfo --context=${AMBIENT_CONTEXT} -f ../examples/authorizationpolicy/gateway.yaml
+```
+
+Now apply the L7 policy that selects the waypoint:
+
+```
+cat ../examples/authorizationpolicy/l7policyambient.yaml
+kubectl apply --namespace=bookinfo --context=${AMBIENT_CONTEXT} -f ../examples/authorizationpolicy/l7policyambient.yaml
 ```
 
 See the waypoint is created:

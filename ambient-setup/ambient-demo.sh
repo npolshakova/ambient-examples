@@ -29,13 +29,15 @@ pe "kubectl apply --namespace=bookinfo --context=${AMBIENT_CONTEXT} -f ../exampl
 pe "kubectl exec -it deploy/productpage-v1 -n bookinfo --context ${AMBIENT_CONTEXT} -c curl -- curl ratings:9080/ratings/1" 
 pe "kubectl exec -it deploy/reviews-v1 -n bookinfo --context ${AMBIENT_CONTEXT} -c curl -- curl ratings:9080/ratings/1" # no gateway yet!
 
-pe "cat ../examples/authorizationpolicy/l7policyambient.yaml"
-pe "kubectl apply --namespace=bookinfo --context=${AMBIENT_CONTEXT} -f ../examples/authorizationpolicy/l7policyambient.yaml"
-
+# create waypoint
 pe "cat ../examples/authorizationpolicy/gateway.yaml"
 pe "kubectl apply --namespace=bookinfo --context=${AMBIENT_CONTEXT} -f ../examples/authorizationpolicy/gateway.yaml"
 
 pe "kubectl get pods -n bookinfo --context=${AMBIENT_CONTEXT}"
+
+# select waypoint on policy
+pe "cat ../examples/authorizationpolicy/l7policyambient.yaml"
+pe "kubectl apply --namespace=bookinfo --context=${AMBIENT_CONTEXT} -f ../examples/authorizationpolicy/l7policyambient.yaml"
 
 pe "kubectl exec -it deploy/productpage-v1 -n bookinfo --context=${AMBIENT_CONTEXT} -c curl -- curl ratings:9080/ratings/1 -H 'X-Test: istio-is-cool'" # should suceed
 pe "kubectl exec -it deploy/productpage-v1 -n bookinfo --context ${AMBIENT_CONTEXT} -c curl -- curl ratings:9080/ratings/1 -H 'X-Test: not-istio'" # 403
