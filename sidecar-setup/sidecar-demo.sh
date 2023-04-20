@@ -51,5 +51,5 @@ pe "kubectl apply --context=${SIDECAR_CONTEXT} -f ../examples/trafficshift/desti
 # pe "kubectl autoscale deployment reviews-v2 --cpu-percent=50 --min=1 --max=10 -n bookinfo --context=${SIDECAR_CONTEXT}"
 # pe "kubectl get hpa -n bookinfo --context=${SIDECAR_CONTEXT}"
 
-# check metrics sum(rate(istio_requests_total{destination_workload="reviews-v1"}[5m]))/sum(rate(istio_requests_total{destination_service_name="reviews"}[5m]))
+# check metrics sum(rate(istio_requests_total{destination_workload="reviews-v1"}[1m]))/sum(rate(istio_requests_total{destination_service_name="reviews"}[1m]))
 pe "while true; do kubectl exec -it deploy/productpage-v1 --context=${SIDECAR_CONTEXT} -c curl -n bookinfo -- curl reviews:9080/reviews/1; done"

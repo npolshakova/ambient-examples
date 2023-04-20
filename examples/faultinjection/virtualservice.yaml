@@ -1,7 +1,7 @@
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
-  name: ratings-ew
+  name: ratings
   namespace: bookinfo
 spec:
   hosts:

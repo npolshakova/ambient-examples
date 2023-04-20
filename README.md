@@ -291,6 +291,48 @@ Now let's check metrics in prometheus to see what percentage is hitting v1 vs. v
 sum(rate(istio_requests_total{destination_workload="reviews-v1"}[5m]))/sum(rate(istio_requests_total{destination_service_name="reviews"}[5m]))
 ```
 
+## Clean up 
+
+Remove all the policies applied to get the cluster back in the original state.
+
+Sidecar resources clean up:
+
+```
+```
+kubectl delete gtw ratings --context=${SIDECAR_CONTEXT} -n bookinfo
+kubectl delete gtw reviews --context=${SIDECAR_CONTEXT} -n bookinfo
+
+kubectl delete vs ratings --context=${SIDECAR_CONTEXT} -n bookinfo
+kubectl delete vs reviews --context=${SIDECAR_CONTEXT} -n bookinfo
+
+kubectl delete vs reviews --context=${SIDECAR_CONTEXT} -n bookinfo
+
+kubectl delete authorizationpolicy ratings-access  --context=${SIDECAR_CONTEXT} -n bookinfo
+```
+```
+
+
+Ambient resources clean up:
+
+```
+kubectl delete gtw ratings --context=${AMBIENT_CONTEXT} -n bookinfo
+kubectl delete gtw reviews --context=${AMBIENT_CONTEXT} -n bookinfo
+
+kubectl delete vs ratings --context=${AMBIENT_CONTEXT} -n bookinfo
+kubectl delete vs reviews --context=${AMBIENT_CONTEXT} -n bookinfo
+
+kubectl delete destinationrule reviews --context=${AMBIENT_CONTEXT} -n bookinfo
+
+kubectl delete authorizationpolicy ratings-access --context=${AMBIENT_CONTEXT} -n bookinfo
+```
+
+Otherwise, nuke the kind clusters: 
+
+```
+kind delete cluster --name ${AMBIENT_CLUSTER}
+kind delete cluster --name ${SIDECAR_CLUSTER}
+```
+
 ## References <a name="refs"></a>
 
 - https://preliminary.istio.io/latest/docs/ops/ambient/getting-started/
