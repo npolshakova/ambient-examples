@@ -1,14 +1,17 @@
-## Table of Contents
+# Table of Contents
 * [Introduction](#introduction)
 * [Sidecar Setup](#sidecar)
 * [Ambient Setup](#ambient)
+* [AuthorizationPolicy](#auth)
+* [Fault Injection](#fault)
+* [Traffic Shift](#traffic)
 * [References](#refs)
 
-## Introduction <a name="introduction"></a>
+# Introduction <a name="introduction"></a>
 
 This guide compares Istio's API when working across two interacting sidecars vs a sidecarless Ambient mesh. While Istio Ambient Mesh supports the same Istio API primitives, when and where policies are implemented under the hood are different. The setup creates a [kind](https://kind.sigs.k8s.io/) cluster locally and install Istio in sidecar mode in one cluster and Istio in ambient mode in another.
 
-## Sidecar Setup <a name="sidecar"></a>
+# Sidecar Setup <a name="sidecar"></a>
 
 Setup the cluster, install istio and bookinfo with: 
 
@@ -32,7 +35,7 @@ Then install the bookinfo example app:
 kubectl apply --namespace bookinfo -f examples/bookinfo.yaml
 ```
 
-## Ambient Setup <a name="ambient"></a>
+# Ambient Setup <a name="ambient"></a>
 
 Setup the cluster, install istio and bookinfo with: 
 
@@ -67,9 +70,9 @@ docker pull docker.io/istio/pilot:1.18.0-alpha.0
 kind load docker-image docker.io/istio/pilot:1.18.0-alpha.0 --name sidecar-cluster
 ```
 
-## Authorization Policy 
+# Authorization Policy <a name="auth"></a>
 
-# Sidecar 
+## Sidecar 
 
 First apply an L4 only AuthorizationPolicy to explictly allow only productpage to call ratings.
 
@@ -120,7 +123,7 @@ kubectl exec -it deploy/reviews-v1 -n bookinfo --context=${SIDECAR_CONTEXT} -c c
 ```
 
 
-# Ambient 
+## Ambient 
 
 The ambient example is almost identical in the policies we are applying except the L7 authorization policy. 
 
@@ -172,9 +175,9 @@ kubectl exec -it deploy/productpage-v1 -n bookinfo --context ${AMBIENT_CONTEXT} 
 kubectl exec -it deploy/reviews-v1 -n bookinfo --context=${AMBIENT_CONTEXT} -c curl -- curl ratings:9080/ratings/1 -H 'X-Test: istio-is-cool'
 ```
 
-## Fault injection 
+# Fault injection <a name="fault"></a>
 
-# Sidecar
+## Sidecar
 
 Leave the L7 authorization policy from before, now apply a fault injection policy with the virtual service: 
 
@@ -194,7 +197,7 @@ kubectl exec -it deploy/reviews-v1 -n bookinfo --context=${SIDECAR_CONTEXT} -c c
 
 Where is the policy being applied in this case?
 
-# Ambient
+## Ambient
 
 Leave the L7 authorization policy from before, now apply a fault injection policy with the virtual service: 
 
@@ -214,9 +217,9 @@ kubectl exec -it deploy/reviews-v1 -n bookinfo --context=${AMBIENT_CONTEXT} -c c
 
 Where is the policy being applied in this case?
 
-## Traffic shift 
+# Traffic shift <a name="traffic"></a>
 
-# Sidecar
+## Sidecar
 
 Apply the virtual service to define the traffic weights:
 
@@ -248,7 +251,7 @@ Now let's check metrics in prometheus to see what percentage is hitting v1 vs. v
 sum(rate(istio_requests_total{destination_workload="reviews-v1"}[5m]))/sum(rate(istio_requests_total{destination_service_name="reviews"}[5m]))
 ```
 
-# Ambient
+## Ambient
 
 Apply the virtual service to define the traffic weights:
 
