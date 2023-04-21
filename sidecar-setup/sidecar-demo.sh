@@ -16,13 +16,13 @@ clear
 # run through examples
 
 # AuthorizationPolicy
-pe "cat ../examples/authorizationpolicy/l4policy.yaml"
+pe "cat ../examples/authorizationpolicy/l4policy.yaml | yq"
 pe "kubectl apply --context=${SIDECAR_CONTEXT} -f ../examples/authorizationpolicy/l4policy.yaml"
 
 pe "kubectl exec -it deploy/productpage-v1 -n bookinfo --context ${SIDECAR_CONTEXT} -c curl -- curl ratings:9080/ratings/1" # should suceed
 pe "kubectl exec -it deploy/reviews-v1 -n bookinfo --context ${SIDECAR_CONTEXT} -c curl -- curl ratings:9080/ratings/1" # 403
 
-pe "cat ../examples/authorizationpolicy/l7policysidecar.yaml"
+pe "cat ../examples/authorizationpolicy/l7policysidecar.yaml | yq"
 pe "kubectl apply --context=${SIDECAR_CONTEXT} -f ../examples/authorizationpolicy/l7policysidecar.yaml"
 
 pe "kubectl exec -it deploy/productpage-v1 -n bookinfo --context ${SIDECAR_CONTEXT} -c curl -- curl ratings:9080/ratings/1 -H 'X-Test: istio-is-cool'" # should suceed
@@ -31,7 +31,7 @@ pe "kubectl exec -it deploy/reviews-v1 -n bookinfo --context ${SIDECAR_CONTEXT} 
 
 # FaultInjection
 
-pe "cat ../examples/faultinjection/virtualservice.yaml"
+pe "cat ../examples/faultinjection/virtualservice.yaml | yq"
 
 pe "kubectl apply --context=${SIDECAR_CONTEXT} -f ../examples/faultinjection/virtualservice.yaml"
 
@@ -40,10 +40,10 @@ pe " kubectl exec -it deploy/reviews-v1 -n bookinfo --context ${SIDECAR_CONTEXT}
 
 # Traffic shift
 
-pe "cat ../examples/trafficshift/virtualservice.yaml"
+pe "cat ../examples/trafficshift/virtualservice.yaml | yq"
 pe "kubectl apply --context=${SIDECAR_CONTEXT} -f ../examples/trafficshift/virtualservice.yaml"
 
-pe "cat ../examples/trafficshift/destinationrule.yaml"
+pe "cat ../examples/trafficshift/destinationrule.yaml | yq"
 pe "kubectl apply --context=${SIDECAR_CONTEXT} -f ../examples/trafficshift/destinationrule.yaml"
 
 # optional step to show hpa scaling works, this requires metrics server (see setup script)

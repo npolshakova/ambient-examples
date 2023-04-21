@@ -16,27 +16,27 @@ clear
 export AMBIENT_CONTEXT=kind-ambient-cluster
 
 # AuthorizationPolicy
-pe "cat ../examples/authorizationpolicy/l4policy.yaml"
+pe "cat ../examples/authorizationpolicy/l4policy.yaml | yq"
 pe "kubectl apply --namespace=bookinfo --context=${AMBIENT_CONTEXT} -f ../examples/authorizationpolicy/l4policy.yaml"
 
 pe "kubectl exec -it deploy/productpage-v1 -n bookinfo --context ${AMBIENT_CONTEXT} -c curl -- curl ratings:9080/ratings/1" # should suceed
 pe "kubectl exec -it deploy/reviews-v1 -n bookinfo --context ${AMBIENT_CONTEXT} -c curl -- curl ratings:9080/ratings/1" # 403
 
 # try same policy as sidecar
-pe "cat ../examples/authorizationpolicy/l7policysidecar.yaml"
+pe "cat ../examples/authorizationpolicy/l7policysidecar.yaml | yq"
 pe "kubectl apply --namespace=bookinfo --context=${AMBIENT_CONTEXT} -f ../examples/authorizationpolicy/l7policysidecar.yaml"
 
 pe "kubectl exec -it deploy/productpage-v1 -n bookinfo --context ${AMBIENT_CONTEXT} -c curl -- curl ratings:9080/ratings/1" 
 pe "kubectl exec -it deploy/reviews-v1 -n bookinfo --context ${AMBIENT_CONTEXT} -c curl -- curl ratings:9080/ratings/1" # no gateway yet!
 
 # create waypoint
-pe "cat ../examples/authorizationpolicy/gateway.yaml"
+pe "cat ../examples/authorizationpolicy/gateway.yaml | yq"
 pe "kubectl apply --namespace=bookinfo --context=${AMBIENT_CONTEXT} -f ../examples/authorizationpolicy/gateway.yaml"
 
 pe "kubectl get pods -n bookinfo --context=${AMBIENT_CONTEXT}"
 
 # select waypoint on policy
-pe "cat ../examples/authorizationpolicy/l7policyambient.yaml"
+pe "cat ../examples/authorizationpolicy/l7policyambient.yaml | yq"
 pe "kubectl apply --namespace=bookinfo --context=${AMBIENT_CONTEXT} -f ../examples/authorizationpolicy/l7policyambient.yaml"
 
 pe "kubectl exec -it deploy/productpage-v1 -n bookinfo --context=${AMBIENT_CONTEXT} -c curl -- curl ratings:9080/ratings/1 -H 'X-Test: istio-is-cool'" # should suceed
@@ -45,7 +45,7 @@ pe "kubectl exec -it deploy/reviews-v1 -n bookinfo --context=${AMBIENT_CONTEXT} 
 
 # FaultInjection
 
-pe "cat ../examples/faultinjection/virtualservice.yaml"
+pe "cat ../examples/faultinjection/virtualservice.yaml | yq"
 
 pe "kubectl apply --context=${AMBIENT_CONTEXT} -f ../examples/faultinjection/virtualservice.yaml"
 
@@ -54,13 +54,13 @@ pe "kubectl exec -it deploy/productpage-v1 -n bookinfo --context=${AMBIENT_CONTE
 pe "kubectl exec -it deploy/reviews-v1 -n bookinfo --context=${AMBIENT_CONTEXT} -c curl -- curl ratings:9080/ratings/1 -H 'X-Test: istio-is-cool'" # 403 -> still blocked by access policy
 
 # Traffic Shift to subsets 
-pe "cat ../examples/trafficshift/virtualservice.yaml"
+pe "cat ../examples/trafficshift/virtualservice.yaml | yq"
 pe "kubectl apply --context=${AMBIENT_CONTEXT} -f ../examples/trafficshift/virtualservice.yaml"
 
-pe "cat ../examples/trafficshift/destinationrule.yaml"
+pe "cat ../examples/trafficshift/destinationrule.yaml | yq"
 pe "kubectl apply --context=${AMBIENT_CONTEXT} -f ../examples/trafficshift/destinationrule.yaml"
 
-pe "cat ../examples/trafficshift/gateway.yaml"
+pe "cat ../examples/trafficshift/gateway.yaml | yq"
 pe "kubectl apply --context=${AMBIENT_CONTEXT} -f ../examples/trafficshift/gateway.yaml"
 pe "kubectl get pods -n bookinfo --context=${AMBIENT_CONTEXT}"
 
